@@ -33,6 +33,31 @@
         .try-out__btn {
             background-color: #4CAF50 !important;
         }
+        .server-selection {
+            padding: 15px 20px;
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+        }
+        .server-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .server-button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .server-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -41,6 +66,11 @@
     </div>
     <div class="description">
         <p>Cette API permet de transcrire des fichiers audio en texte en utilisant le modèle Faster Whisper. L'API est sécurisée par authentification JWT.</p>
+    </div>
+    <div class="server-selection">
+        <label for="server-url">URL du serveur :</label>
+        <input type="text" id="server-url" class="server-input" value="" placeholder="http://localhost:5000">
+        <button id="update-server" class="server-button">Mettre à jour</button>
     </div>
     <div id="swagger-ui"></div>
 
@@ -51,12 +81,12 @@
             info: {
                 title: "API de Transcription Audio Whisper",
                 version: "1.0.0",
-                description: "API pour transcrire des fichiers audio en texte en utilisant Faster Whisper"
+                description: "API pour transcrire des fichiers audio en texte en utilisant le modèle Faster Whisper"
             },
             servers: [
                 {
-                    url: "http://localhost:5000",
-                    description: "Serveur local"
+                    url: window.location.origin,
+                    description: "Serveur actuel"
                 }
             ],
             components: {
@@ -305,23 +335,47 @@
             }
         };
 
+        let ui;
+
+        function initSwaggerUI(serverUrl) {
+            if (ui) {
+                ui.specActions.updateUrl(serverUrl);
+                ui.specActions.download();
+            } else {
+                ui = SwaggerUIBundle({
+                    spec: spec,
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIBundle.SwaggerUIStandalonePreset
+                    ],
+                    layout: "BaseLayout",
+                    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch']
+                });
+
+                window.ui = ui;
+            }
+        }
+
         window.onload = function() {
-            const ui = SwaggerUIBundle({
-                spec: spec,
-                dom_id: '#swagger-ui',
-                deepLinking: true,
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIBundle.SwaggerUIStandalonePreset
-                ],
-                layout: "BaseLayout",
-                supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-                onComplete: function() {
-                    ui.preauthorizeApiKey("bearerAuth", "");
+            // Initialiser l'URL du serveur avec l'URL actuelle
+            document.getElementById('server-url').value = window.location.origin;
+            
+            // Initialiser Swagger UI
+            initSwaggerUI(window.location.origin);
+            
+            // Ajouter un gestionnaire d'événements pour le bouton de mise à jour
+            document.getElementById('update-server').addEventListener('click', function() {
+                const serverUrl = document.getElementById('server-url').value.trim();
+                if (serverUrl) {
+                    // Mettre à jour les serveurs dans la spécification
+                    spec.servers = [{ url: serverUrl, description: "Serveur personnalisé" }];
+                    
+                    // Mettre à jour Swagger UI
+                    initSwaggerUI(serverUrl);
                 }
             });
-
-            window.ui = ui;
         };
     </script>
 </body>

@@ -1,5 +1,5 @@
 from faster_whisper import WhisperModel
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
 import tempfile
@@ -30,6 +30,11 @@ USERS = {
 
 # Variable globale pour stocker le modèle
 model = None
+
+@app.route('/', methods=['GET'])
+def documentation():
+    """Endpoint pour accéder à la documentation Swagger"""
+    return send_file('documentation.html')
 
 @app.route('/login', methods=['POST'])
 def login():
