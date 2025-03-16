@@ -16,3 +16,7 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-changez_cette_clé_secrète}
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changez_ce_mot_de_passe}
+      - MODEL_SIZE=${MODEL_SIZE:-tiny}
+      - DEVICE=${DEVICE:-cpu}
+      - COMPUTE_TYPE=${COMPUTE_TYPE:-int8}
+    command: python server_faster_whisper.py --model ${MODEL_SIZE:-tiny} --device ${DEVICE:-cpu} --compute_type ${COMPUTE_TYPE:-int8}

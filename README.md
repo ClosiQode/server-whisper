@@ -72,9 +72,16 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
 
 8. **Définissez le port de l'interface Web (5000)**
 
-9. **Cliquez sur "Install" pour démarrer l'installation**
+9. **Configurez les variables d'environnement importantes :**
+   - `MODEL_SIZE` : Taille du modèle à utiliser (tiny, base, small, medium, large)
+   - `DEVICE` : Périphérique à utiliser (cpu, cuda)
+   - `COMPUTE_TYPE` : Type de calcul (float16, int8)
+   - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT
+   - `ADMIN_USERNAME` et `ADMIN_PASSWORD` : Identifiants administrateur
 
-10. **Créez un fichier `.env` à partir du modèle `env.sample` et configurez vos variables d'environnement**
+10. **Cliquez sur "Install" pour démarrer l'installation**
+
+11. **Créez un fichier `.env` à partir du modèle `env.sample` si vous souhaitez modifier d'autres paramètres**
 
 ## Utilisation
 

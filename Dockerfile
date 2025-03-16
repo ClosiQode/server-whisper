@@ -18,5 +18,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Exposition du port
 EXPOSE 5000
 
-# Commande de démarrage
-CMD ["python", "server_faster_whisper.py", "--model", "tiny", "--host", "0.0.0.0", "--port", "5000"]
+# Commande par défaut (peut être remplacée par docker-compose)
+CMD ["python", "server_faster_whisper.py", "--model", "tiny"]
