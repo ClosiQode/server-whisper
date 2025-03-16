@@ -20,3 +20,9 @@ services:
       - DEVICE=${DEVICE:-cpu}
       - COMPUTE_TYPE=${COMPUTE_TYPE:-int8}
     command: python server_faster_whisper.py --model ${MODEL_SIZE:-tiny} --device ${DEVICE:-cpu} --compute_type ${COMPUTE_TYPE:-int8}
+    labels:
+      - "com.github.repo=https://github.com/ClosiQode/server-whisper"
+      - "com.casaos.name=Whisper API"
+      - "com.casaos.description=API sécurisée pour la transcription audio avec Faster Whisper"
+      - "com.casaos.developer=ClosiQode"
+      - "com.casaos.icon=https://raw.githubusercontent.com/ClosiQode/server-whisper/main/assets/icon.png"

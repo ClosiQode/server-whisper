@@ -83,6 +83,91 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
 
 11. **Créez un fichier `.env` à partir du modèle `env.sample` si vous souhaitez modifier d'autres paramètres**
 
+## Installation avec CasaOS
+
+CasaOS est une plateforme de serveur personnel qui facilite la gestion des applications Docker. Voici comment installer l'API Whisper sur CasaOS :
+
+### Méthode 1 : Installation via l'interface graphique
+
+1. **Accédez à votre interface CasaOS** dans votre navigateur
+
+2. **Allez dans la section "Apps"** dans le menu latéral
+
+3. **Cliquez sur le bouton "+"** puis sélectionnez "Install a customized app"
+
+4. **Cliquez sur le bouton "Import"** en haut à droite de la fenêtre
+
+5. **Copiez-collez le contenu du fichier `docker-compose.yml`** de ce projet dans la zone de texte
+
+6. **Cliquez sur "Submit"** pour convertir la configuration en format CasaOS
+
+7. **Configurez l'application :**
+   - Donnez un nom à votre application (ex: "Whisper API")
+   - Vérifiez que les ports exposés ne créent pas de conflits (port 5000 par défaut)
+   - Définissez le port de l'interface Web (5000)
+
+8. **Configurez les variables d'environnement importantes :**
+   - `MODEL_SIZE` : Taille du modèle à utiliser (tiny, base, small, medium, large)
+   - `DEVICE` : Périphérique à utiliser (cpu, cuda)
+   - `COMPUTE_TYPE` : Type de calcul (float16, int8)
+   - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT (utilisez une valeur aléatoire et sécurisée)
+   - `ADMIN_USERNAME` et `ADMIN_PASSWORD` : Identifiants administrateur
+
+9. **Cliquez sur "Install"** pour démarrer l'installation
+
+10. **Accédez à votre API** via l'URL `http://votre-serveur-casaos:5000/documentation.html`
+
+### Méthode 2 : Installation via la ligne de commande
+
+Si vous préférez utiliser la ligne de commande, vous pouvez également installer l'API Whisper sur CasaOS en suivant ces étapes :
+
+1. **Connectez-vous à votre serveur CasaOS** via SSH
+
+2. **Créez un répertoire pour l'application :**
+   ```bash
+   mkdir -p /DATA/AppData/whisper-api
+   cd /DATA/AppData/whisper-api
+   ```
+
+3. **Clonez ce dépôt ou téléchargez les fichiers :**
+   ```bash
+   git clone https://github.com/votre-utilisateur/server-whisper.git .
+   ```
+   Ou téléchargez et extrayez les fichiers manuellement.
+
+4. **Créez un fichier `.env` à partir du modèle :**
+   ```bash
+   cp env.sample .env
+   nano .env  # Modifiez les valeurs selon vos besoins
+   ```
+
+5. **Lancez l'application avec Docker Compose :**
+   ```bash
+   docker-compose up -d
+   ```
+
+6. **Vérifiez que l'application fonctionne :**
+   ```bash
+   docker-compose logs
+   ```
+
+7. **Accédez à votre API** via l'URL `http://votre-serveur-casaos:5000/documentation.html`
+
+### Conseils pour CasaOS
+
+- **Choix du modèle** : Pour les serveurs avec des ressources limitées, utilisez le modèle `tiny` ou `base`. Pour une meilleure précision, utilisez `small` ou `medium` si vos ressources le permettent.
+
+- **Persistance des données** : Les modèles téléchargés sont stockés dans le volume Docker `/app/models`. Ils seront conservés même si vous redémarrez le conteneur.
+
+- **Sécurité** : Changez toujours les valeurs par défaut de `JWT_SECRET_KEY`, `ADMIN_USERNAME` et `ADMIN_PASSWORD` pour sécuriser votre API.
+
+- **Mise à jour** : Pour mettre à jour l'application, tirez les dernières modifications du dépôt et reconstruisez le conteneur :
+  ```bash
+  git pull
+  docker-compose down
+  docker-compose up -d --build
+  ```
+
 ## Utilisation
 
 ### Démarrer le serveur (installation locale)
