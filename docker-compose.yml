@@ -2,7 +2,7 @@ version: '3'
 
 services:
   whisper-api:
-    build: .
+    image: closiqode/server-whisper:latest
     container_name: whisper-api
     restart: unless-stopped
     ports:
@@ -25,4 +25,4 @@ services:
       - "com.casaos.name=Whisper API"
       - "com.casaos.description=API sécurisée pour la transcription audio avec Faster Whisper"
       - "com.casaos.developer=ClosiQode"
-      - "com.casaos.icon=https://raw.githubusercontent.com/ClosiQode/server-whisper/main/assets/icon.png"
+      - "com.casaos.icon=https://raw.githubusercontent.com/ClosiQode/server-whisper/main/assets/icon.svg"

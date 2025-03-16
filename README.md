@@ -36,6 +36,9 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
    JWT_SECRET_KEY=votre_clé_secrète_jwt
    ADMIN_USERNAME=admin
    ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+   MODEL_SIZE=tiny
+   DEVICE=cpu
+   COMPUTE_TYPE=int8
    ```
 
 4. **Vérifier l'installation**
@@ -46,10 +49,47 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
 
 ### Option 2 : Installation avec Docker
 
-1. **Cloner le dépôt ou télécharger les fichiers**
+1. **Utiliser l'image Docker prête à l'emploi**
 
-2. **Construire et démarrer le conteneur Docker**
+   ```bash
+   docker run -d \
+     --name whisper-api \
+     -p 5000:5000 \
+     -e JWT_SECRET_KEY=votre_clé_secrète_jwt \
+     -e ADMIN_USERNAME=admin \
+     -e ADMIN_PASSWORD=votre_mot_de_passe_sécurisé \
+     -e MODEL_SIZE=tiny \
+     -e DEVICE=cpu \
+     -e COMPUTE_TYPE=int8 \
+     closiqode/server-whisper:latest
+   ```
 
+2. **Ou utiliser Docker Compose**
+
+   Créez un fichier `docker-compose.yml` avec le contenu suivant :
+   ```yaml
+   version: '3'
+   
+   services:
+     whisper-api:
+       image: closiqode/server-whisper:latest
+       container_name: whisper-api
+       restart: unless-stopped
+       ports:
+         - "5000:5000"
+       volumes:
+         - ./config:/app/config
+         - ./models:/app/models
+       environment:
+         - JWT_SECRET_KEY=votre_clé_secrète_jwt
+         - ADMIN_USERNAME=admin
+         - ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+         - MODEL_SIZE=tiny
+         - DEVICE=cpu
+         - COMPUTE_TYPE=int8
+   ```
+
+   Puis lancez avec :
    ```bash
    docker-compose up -d
    ```
@@ -62,9 +102,36 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
 
 3. **Cliquez sur le bouton "Import" en haut à droite**
 
-4. **Copiez-collez le contenu du fichier `docker-compose.yml` de ce projet**
+4. **Copiez-collez le contenu du fichier `docker-compose.yml`** suivant dans la zone de texte :
+   ```yaml
+   version: '3'
+   
+   services:
+     whisper-api:
+       image: closiqode/server-whisper:latest
+       container_name: whisper-api
+       restart: unless-stopped
+       ports:
+         - "5000:5000"
+       volumes:
+         - ./config:/app/config
+         - ./models:/app/models
+       environment:
+         - JWT_SECRET_KEY=votre_clé_secrète_jwt
+         - ADMIN_USERNAME=admin
+         - ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+         - MODEL_SIZE=tiny
+         - DEVICE=cpu
+         - COMPUTE_TYPE=int8
+       labels:
+         - "com.github.repo=https://github.com/ClosiQode/server-whisper"
+         - "com.casaos.name=Whisper API"
+         - "com.casaos.description=API sécurisée pour la transcription audio avec Faster Whisper"
+         - "com.casaos.developer=ClosiQode"
+         - "com.casaos.icon=https://raw.githubusercontent.com/ClosiQode/server-whisper/main/assets/icon.svg"
+   ```
 
-5. **Cliquez sur "Submit" pour convertir la configuration**
+5. **Cliquez sur "Submit"** pour convertir la configuration en format CasaOS
 
 6. **Vérifiez que les ports exposés ne créent pas de conflits (port 5000 par défaut)**
 
@@ -79,7 +146,7 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
    - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT
    - `ADMIN_USERNAME` et `ADMIN_PASSWORD` : Identifiants administrateur
 
-10. **Cliquez sur "Install" pour démarrer l'installation**
+10. **Cliquez sur "Install"** pour démarrer l'installation
 
 11. **Créez un fichier `.env` à partir du modèle `env.sample` si vous souhaitez modifier d'autres paramètres**
 
@@ -97,7 +164,34 @@ CasaOS est une plateforme de serveur personnel qui facilite la gestion des appli
 
 4. **Cliquez sur le bouton "Import"** en haut à droite de la fenêtre
 
-5. **Copiez-collez le contenu du fichier `docker-compose.yml`** de ce projet dans la zone de texte
+5. **Copiez-collez le contenu du fichier `docker-compose.yml`** suivant dans la zone de texte :
+   ```yaml
+   version: '3'
+   
+   services:
+     whisper-api:
+       image: closiqode/server-whisper:latest
+       container_name: whisper-api
+       restart: unless-stopped
+       ports:
+         - "5000:5000"
+       volumes:
+         - ./config:/app/config
+         - ./models:/app/models
+       environment:
+         - JWT_SECRET_KEY=votre_clé_secrète_jwt
+         - ADMIN_USERNAME=admin
+         - ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+         - MODEL_SIZE=tiny
+         - DEVICE=cpu
+         - COMPUTE_TYPE=int8
+       labels:
+         - "com.github.repo=https://github.com/ClosiQode/server-whisper"
+         - "com.casaos.name=Whisper API"
+         - "com.casaos.description=API sécurisée pour la transcription audio avec Faster Whisper"
+         - "com.casaos.developer=ClosiQode"
+         - "com.casaos.icon=https://raw.githubusercontent.com/ClosiQode/server-whisper/main/assets/icon.svg"
+   ```
 
 6. **Cliquez sur "Submit"** pour convertir la configuration en format CasaOS
 

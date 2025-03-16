@@ -10,10 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copie des fichiers nécessaires
 COPY requirements.txt .
 COPY server_faster_whisper.py .
-COPY client.html .
+COPY documentation.html .
 
 # Installation des dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Création des répertoires pour les volumes
+RUN mkdir -p /app/config /app/models
 
 # Exposition du port
 EXPOSE 5000
