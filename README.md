@@ -1,88 +1,142 @@
-# Serveur de Transcription Audio avec Whisper
+# Serveur de Transcription Audio avec Faster Whisper
 
-Ce projet fournit un serveur de transcription audio basé sur la bibliothèque `faster-whisper`, ainsi qu'une interface client web pour faciliter son utilisation.
+Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibliothèque `faster-whisper`, avec authentification JWT et documentation Swagger.
+
+## Caractéristiques
+
+- Transcription audio avec le modèle Faster Whisper
+- API REST sécurisée avec authentification JWT
+- Documentation Swagger interactive
+- Support de multiples formats audio (WAV, MP3, OGG, FLAC, AAC, etc.)
+- Prêt pour le déploiement avec Docker et CasaOS
 
 ## Prérequis
 
 - Python 3.8 ou supérieur
 - pip (gestionnaire de paquets Python)
-- Navigateur web moderne
+- Docker et Docker Compose (pour le déploiement avec CasaOS)
+- ffmpeg (installé automatiquement dans le conteneur Docker)
 
 ## Installation
+
+### Option 1 : Installation locale
 
 1. **Cloner le dépôt ou télécharger les fichiers**
 
 2. **Installer les dépendances Python requises**
 
    ```bash
-   pip install faster-whisper flask flask-cors
+   pip install -r requirements.txt
    ```
 
-3. **Vérifier l'installation**
+3. **Configurer les variables d'environnement**
 
-   Pour vérifier que tout est correctement installé, vous pouvez exécuter le script de test :
+   Créez un fichier `.env` à la racine du projet avec le contenu suivant :
+   ```
+   JWT_SECRET_KEY=votre_clé_secrète_jwt
+   ADMIN_USERNAME=admin
+   ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+   ```
+
+4. **Vérifier l'installation**
 
    ```bash
    python test_faster_whisper.py tiny
    ```
 
-   Si tout fonctionne correctement, vous devriez voir le message "Modèle chargé avec succès!".
+### Option 2 : Installation avec Docker
+
+1. **Cloner le dépôt ou télécharger les fichiers**
+
+2. **Construire et démarrer le conteneur Docker**
+
+   ```bash
+   docker-compose up -d
+   ```
+
+### Option 3 : Installation avec CasaOS
+
+1. **Accédez à votre interface CasaOS**
+
+2. **Allez dans "Apps" puis "Custom App"**
+
+3. **Cliquez sur le bouton "Import" en haut à droite**
+
+4. **Copiez-collez le contenu du fichier `docker-compose.yml` de ce projet**
+
+5. **Cliquez sur "Submit" pour convertir la configuration**
+
+6. **Vérifiez que les ports exposés ne créent pas de conflits (port 5000 par défaut)**
+
+7. **Donnez un nom à votre application (ex: "Whisper API")**
+
+8. **Définissez le port de l'interface Web (5000)**
+
+9. **Cliquez sur "Install" pour démarrer l'installation**
+
+10. **Créez un fichier `.env` à partir du modèle `env.sample` et configurez vos variables d'environnement**
 
 ## Utilisation
 
-### Démarrer le serveur
-
-1. **Lancer le serveur avec le modèle de votre choix**
-
-   ```bash
-   python server_faster_whisper.py --model tiny
-   ```
-
-   Options disponibles :
-   - `--model` : Taille du modèle à utiliser (tiny, base, small, medium, large-v1, large-v2, large-v3)
-   - `--host` : Adresse IP du serveur (par défaut : 0.0.0.0)
-   - `--port` : Port du serveur (par défaut : 5000)
-   - `--device` : Périphérique à utiliser (cpu, cuda)
-   - `--compute_type` : Type de calcul (float16, int8)
-
-   Exemple avec plus d'options :
-   ```bash
-   python server_faster_whisper.py --model small --port 8080 --device cpu --compute_type int8
-   ```
-
-2. **Le serveur sera accessible à l'adresse** : http://localhost:5000 (ou le port que vous avez spécifié)
-
-### Utiliser l'interface client web
-
-1. **Ouvrir le fichier `client.html` dans votre navigateur**
-
-2. **Sélectionner un fichier audio au format WAV**
-
-3. **Vérifier l'URL du serveur** (par défaut : http://localhost:5000/transcribe)
-
-4. **Cliquer sur le bouton "Transcrire"**
-
-5. **Attendre la fin de la transcription** et visualiser les résultats
-
-### Utiliser l'API directement
-
-Vous pouvez également envoyer des requêtes directement à l'API :
+### Démarrer le serveur (installation locale)
 
 ```bash
-curl -X POST -F "file=@chemin/vers/audio.wav" http://localhost:5000/transcribe
+python server_faster_whisper.py --model tiny
 ```
 
-Ou avec Python :
+Options disponibles :
+- `--model` : Taille du modèle à utiliser (tiny, base, small, medium, large-v1, large-v2, large-v3)
+- `--host` : Adresse IP du serveur (par défaut : 0.0.0.0)
+- `--port` : Port du serveur (par défaut : 5000)
+- `--device` : Périphérique à utiliser (cpu, cuda)
+- `--compute_type` : Type de calcul (float16, int8)
 
-```python
-import requests
+### Accéder à la documentation de l'API
 
-url = "http://localhost:5000/transcribe"
-files = {"file": open("chemin/vers/audio.wav", "rb")}
-response = requests.post(url, files=files)
-result = response.json()
-print(result)
+Ouvrez le fichier `documentation.html` dans votre navigateur pour accéder à la documentation Swagger de l'API.
+
+### Authentification
+
+Pour utiliser l'API, vous devez d'abord obtenir un token JWT en vous authentifiant :
+
+```bash
+curl -X POST http://localhost:5000/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"votre_mot_de_passe"}'
 ```
+
+La réponse contiendra un token JWT que vous devrez inclure dans les requêtes suivantes.
+
+### Transcription audio
+
+Une fois authentifié, vous pouvez transcrire un fichier audio :
+
+```bash
+curl -X POST http://localhost:5000/transcribe \
+  -H "Authorization: Bearer votre_token_jwt" \
+  -F "file=@chemin/vers/audio.wav"
+```
+
+## Sécurité
+
+Ce projet utilise l'authentification JWT pour sécuriser l'API. Assurez-vous de :
+
+1. Changer les valeurs par défaut dans le fichier `.env`
+2. Utiliser une clé JWT secrète forte et unique
+3. Stocker les informations d'identification de manière sécurisée
+4. Limiter l'accès à votre serveur aux utilisateurs de confiance
+
+## Formats audio supportés
+
+Grâce à l'utilisation de ffmpeg, cette API supporte une large gamme de formats audio, notamment :
+- WAV
+- MP3
+- OGG
+- FLAC
+- AAC
+- M4A
+- MP4 (conteneur audio/vidéo)
+- Et bien d'autres formats supportés par ffmpeg
 
 ## Tailles de modèles disponibles
 
@@ -96,36 +150,36 @@ print(result)
 
 ## Dépannage
 
-### Erreur "Failed to fetch"
+### Problèmes d'authentification
 
-Si vous rencontrez une erreur "Failed to fetch" dans l'interface client :
-
-1. Vérifiez que le serveur est bien en cours d'exécution
-2. Assurez-vous que l'URL du serveur est correcte dans l'interface client
-3. Essayez de vider le cache de votre navigateur ou d'utiliser une fenêtre de navigation privée
+Si vous rencontrez des problèmes d'authentification :
+1. Vérifiez que les identifiants dans le fichier `.env` correspondent à ceux que vous utilisez
+2. Assurez-vous que le token JWT n'est pas expiré (durée de validité par défaut : 30 jours)
+3. Vérifiez que le token est correctement inclus dans l'en-tête `Authorization`
 
 ### Problèmes de mémoire
 
 Si vous rencontrez des problèmes de mémoire avec les grands modèles :
-
 1. Essayez d'utiliser un modèle plus petit (tiny ou base)
-2. Augmentez la mémoire disponible pour Python
+2. Augmentez la mémoire disponible pour le conteneur Docker
 3. Utilisez l'option `--compute_type int8` pour réduire l'utilisation de la mémoire
 
 ### Fichiers audio non reconnus
 
 Si vos fichiers audio ne sont pas correctement transcrits :
-
-1. Assurez-vous qu'ils sont au format WAV
-2. Vérifiez que l'audio est de bonne qualité et clairement audible
+1. Assurez-vous que l'audio est de bonne qualité et clairement audible
+2. Vérifiez que ffmpeg est correctement installé (dans le conteneur ou sur votre système)
 3. Essayez d'utiliser un modèle plus grand pour une meilleure précision
 
-## Scripts disponibles
+## Structure du projet
 
-- `server_faster_whisper.py` : Serveur API Flask pour la transcription audio
-- `test_faster_whisper.py` : Script de test pour vérifier le fonctionnement de la bibliothèque faster-whisper
-- `test_whispercpp.py` : Script alternatif utilisant la bibliothèque whispercpp
-- `client.html` : Interface client web pour interagir avec le serveur
+- `server_faster_whisper.py` : Serveur API Flask avec authentification JWT
+- `test_faster_whisper.py` : Script de test pour vérifier le fonctionnement de faster-whisper
+- `documentation.html` : Documentation Swagger de l'API
+- `Dockerfile` : Configuration pour la création d'une image Docker
+- `docker-compose.yml` : Configuration pour le déploiement avec Docker Compose
+- `.env` : Fichier de configuration des variables d'environnement
+- `requirements.txt` : Liste des dépendances Python
 
 ## Licence
 
@@ -136,4 +190,5 @@ Ce projet est distribué sous licence MIT.
 Ce projet utilise les bibliothèques suivantes :
 - [faster-whisper](https://github.com/guillaumekln/faster-whisper) : Implémentation optimisée du modèle Whisper d'OpenAI
 - [Flask](https://flask.palletsprojects.com/) : Framework web léger pour Python
-- [Flask-CORS](https://flask-cors.readthedocs.io/) : Extension Flask pour gérer les requêtes cross-origin
+- [Flask-JWT-Extended](https://flask-jwt-extended.readthedocs.io/) : Extension Flask pour l'authentification JWT
+- [Swagger UI](https://swagger.io/tools/swagger-ui/) : Interface pour la documentation de l'API
