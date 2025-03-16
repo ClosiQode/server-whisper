@@ -119,7 +119,7 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
          - ./config:/app/config
          - ./models:/app/models
        environment:
-         - JWT_SECRET_KEY=49f85d9ae0eadab02f28f1c0d4118ac0effca0197e27c116f9a4f580c0d91c7e
+         - JWT_SECRET_KEY=votre_clé_secrète_jwt
          - ADMIN_USERNAME=admin
          - ADMIN_PASSWORD=changez_ce_mot_de_passe
          - MODEL_SIZE=tiny
@@ -177,7 +177,7 @@ CasaOS est une plateforme de serveur personnel qui facilite la gestion des appli
          - ./config:/app/config
          - ./models:/app/models
        environment:
-         - JWT_SECRET_KEY=49f85d9ae0eadab02f28f1c0d4118ac0effca0197e27c116f9a4f580c0d91c7e
+         - JWT_SECRET_KEY=votre_clé_secrète_jwt
          - ADMIN_USERNAME=admin
          - ADMIN_PASSWORD=changez_ce_mot_de_passe
          - MODEL_SIZE=tiny
