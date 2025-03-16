@@ -21,5 +21,8 @@ RUN mkdir -p /app/config /app/models
 # Exposition du port
 EXPOSE 5000
 
+# S'assurer que le script est exécutable
+RUN chmod +x /app/server_faster_whisper.py
+
 # Commande par défaut (utilise les variables d'environnement)
-CMD ["python", "server_faster_whisper.py"]
+ENTRYPOINT ["python", "/app/server_faster_whisper.py"]
