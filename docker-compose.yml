@@ -17,7 +17,7 @@ services:
       - MODEL_SIZE=tiny
       - DEVICE=cpu
       - COMPUTE_TYPE=int8
-    command: python server_faster_whisper.py --model ${MODEL_SIZE:-tiny} --device ${DEVICE:-cpu} --compute_type ${COMPUTE_TYPE:-int8}
+    command: python server_faster_whisper.py
     labels:
       - "com.github.repo=https://github.com/ClosiQode/server-whisper"
       - "com.casaos.name=Whisper API"

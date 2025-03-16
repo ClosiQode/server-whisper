@@ -21,5 +21,5 @@ RUN mkdir -p /app/config /app/models
 # Exposition du port
 EXPOSE 5000
 
-# Commande par défaut (peut être remplacée par docker-compose)
-CMD ["python", "server_faster_whisper.py", "--model", "tiny"]
+# Commande par défaut (utilise les variables d'environnement)
+CMD ["python", "server_faster_whisper.py"]

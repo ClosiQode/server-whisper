@@ -52,51 +52,49 @@ def login():
     return jsonify(access_token=access_token), 200
 
 @app.route('/transcribe', methods=['POST'])
-@jwt_required()  # Protection de l'endpoint avec JWT
+@jwt_required()
 def transcribe():
-    # Vérification de l'identité de l'utilisateur
-    current_user = get_jwt_identity()
-    if current_user not in USERS:
-        return jsonify({'error': 'Utilisateur non autorisé'}), 403
-    
+    """Endpoint pour transcrire un fichier audio"""
     # Vérifier si un fichier a été envoyé
     if 'file' not in request.files:
-        return jsonify({'error': 'Aucun fichier audio envoyé'}), 400
+        return jsonify({'error': 'Aucun fichier audio fourni'}), 400
     
     file = request.files['file']
     
-    # Vérifier si le fichier est vide
     if file.filename == '':
         return jsonify({'error': 'Nom de fichier vide'}), 400
     
     # Créer un fichier temporaire pour stocker l'audio
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.wav')
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
     temp_filename = temp_file.name
     temp_file.close()
     
     try:
-        # Sauvegarder le fichier audio
+        # Sauvegarder le fichier audio dans le fichier temporaire
         file.save(temp_filename)
         
+        # Vérifier si le modèle est chargé
+        if model is None:
+            return jsonify({'error': 'Le modèle n\'est pas chargé'}), 500
+        
         # Transcrire l'audio
-        segments, info = model.transcribe(temp_filename, beam_size=5)
+        segments, info = model.transcribe(temp_filename)
         
-        # Préparer la réponse
-        result = {
-            'language': info.language,
-            'language_probability': info.language_probability,
-            'segments': []
-        }
-        
-        # Ajouter les segments transcrits
+        # Convertir les segments en liste de dictionnaires
+        segments_list = []
         for segment in segments:
-            result['segments'].append({
+            segments_list.append({
                 'start': segment.start,
                 'end': segment.end,
                 'text': segment.text
             })
         
-        return jsonify(result)
+        # Retourner les résultats
+        return jsonify({
+            'language': info.language,
+            'language_probability': info.language_probability,
+            'segments': segments_list
+        }), 200
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -112,23 +110,43 @@ def health_check():
     return jsonify({'status': 'ok', 'model_loaded': model is not None}), 200
 
 def main():
+    # Utiliser les variables d'environnement au lieu des arguments de ligne de commande
+    model_size = os.environ.get("MODEL_SIZE", "tiny")
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", "5000"))
+    device = os.environ.get("DEVICE", "cpu")
+    compute_type = os.environ.get("COMPUTE_TYPE", "int8")
+    
+    # Pour compatibilité avec les anciens scripts, on accepte aussi les arguments de ligne de commande
     parser = argparse.ArgumentParser(description='Serveur de transcription audio avec Faster Whisper')
-    parser.add_argument('--model', type=str, default='tiny', help='Nom du modèle à utiliser (tiny, base, small, medium, large, large-v2, large-v3)')
-    parser.add_argument('--host', type=str, default='0.0.0.0', help='Adresse IP du serveur')
-    parser.add_argument('--port', type=int, default=5000, help='Port du serveur')
-    parser.add_argument('--device', type=str, default='cpu', help='Périphérique à utiliser (cpu, cuda)')
-    parser.add_argument('--compute_type', type=str, default='int8', help='Type de calcul (float16, int8)')
+    parser.add_argument('--model', type=str, help='Nom du modèle à utiliser (tiny, base, small, medium, large, large-v2, large-v3)')
+    parser.add_argument('--host', type=str, help='Adresse IP du serveur')
+    parser.add_argument('--port', type=int, help='Port du serveur')
+    parser.add_argument('--device', type=str, help='Périphérique à utiliser (cpu, cuda)')
+    parser.add_argument('--compute_type', type=str, help='Type de calcul (float16, int8)')
     
     args = parser.parse_args()
     
+    # Les arguments de ligne de commande ont priorité sur les variables d'environnement
+    if args.model:
+        model_size = args.model
+    if args.host:
+        host = args.host
+    if args.port:
+        port = args.port
+    if args.device:
+        device = args.device
+    if args.compute_type:
+        compute_type = args.compute_type
+    
     global model
     
-    print(f"Chargement du modèle: {args.model}")
-    model = WhisperModel(args.model, device=args.device, compute_type=args.compute_type)
-    print("Modèle chargé avec succès!")
+    print(f"Chargement du modèle: {model_size}")
+    model = WhisperModel(model_size, device=device, compute_type=compute_type)
+    print(f"Modèle chargé avec succès! (device: {device}, compute_type: {compute_type})")
     
-    print(f"Démarrage du serveur sur {args.host}:{args.port}")
-    app.run(host=args.host, port=args.port)
+    print(f"Démarrage du serveur sur {host}:{port}")
+    app.run(host=host, port=port)
 
 if __name__ == "__main__":
     main()

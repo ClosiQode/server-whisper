@@ -41,11 +41,13 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
    COMPUTE_TYPE=int8
    ```
 
-4. **Vérifier l'installation**
+4. **Lancer le serveur**
 
    ```bash
-   python test_faster_whisper.py tiny
+   python server_faster_whisper.py
    ```
+
+   Le serveur utilisera automatiquement les variables d'environnement définies dans le fichier `.env`.
 
 ### Option 2 : Installation avec Docker
 
@@ -117,9 +119,9 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
          - ./config:/app/config
          - ./models:/app/models
        environment:
-         - JWT_SECRET_KEY=votre_clé_secrète_jwt
+         - JWT_SECRET_KEY=49f85d9ae0eadab02f28f1c0d4118ac0effca0197e27c116f9a4f580c0d91c7e
          - ADMIN_USERNAME=admin
-         - ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+         - ADMIN_PASSWORD=changez_ce_mot_de_passe
          - MODEL_SIZE=tiny
          - DEVICE=cpu
          - COMPUTE_TYPE=int8
@@ -133,22 +135,18 @@ Ce projet fournit un serveur de transcription audio sécurisé basé sur la bibl
 
 5. **Cliquez sur "Submit"** pour convertir la configuration en format CasaOS
 
-6. **Vérifiez que les ports exposés ne créent pas de conflits (port 5000 par défaut)**
+6. **Vérifiez que les ports exposés ne créent pas de conflits** (port 5000 par défaut)
 
-7. **Donnez un nom à votre application (ex: "Whisper API")**
-
-8. **Définissez le port de l'interface Web (5000)**
-
-9. **Configurez les variables d'environnement importantes :**
-   - `MODEL_SIZE` : Taille du modèle à utiliser (tiny, base, small, medium, large)
+7. **Modifiez les variables d'environnement selon vos besoins** :
+   - `MODEL_SIZE` : Taille du modèle Whisper à utiliser (tiny, base, small, medium, large)
    - `DEVICE` : Périphérique à utiliser (cpu, cuda)
-   - `COMPUTE_TYPE` : Type de calcul (float16, int8)
-   - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT
+   - `COMPUTE_TYPE` : Type de calcul (int8, float16)
+   - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT (changez-la pour plus de sécurité)
    - `ADMIN_USERNAME` et `ADMIN_PASSWORD` : Identifiants administrateur
 
-10. **Cliquez sur "Install"** pour démarrer l'installation
+8. **Cliquez sur "Install"** pour démarrer l'installation
 
-11. **Créez un fichier `.env` à partir du modèle `env.sample` si vous souhaitez modifier d'autres paramètres**
+9. **Accédez à l'API** via l'URL `http://votre-serveur-casaos:5000/documentation.html`
 
 ## Installation avec CasaOS
 
@@ -179,9 +177,9 @@ CasaOS est une plateforme de serveur personnel qui facilite la gestion des appli
          - ./config:/app/config
          - ./models:/app/models
        environment:
-         - JWT_SECRET_KEY=votre_clé_secrète_jwt
+         - JWT_SECRET_KEY=49f85d9ae0eadab02f28f1c0d4118ac0effca0197e27c116f9a4f580c0d91c7e
          - ADMIN_USERNAME=admin
-         - ADMIN_PASSWORD=votre_mot_de_passe_sécurisé
+         - ADMIN_PASSWORD=changez_ce_mot_de_passe
          - MODEL_SIZE=tiny
          - DEVICE=cpu
          - COMPUTE_TYPE=int8
@@ -195,71 +193,59 @@ CasaOS est une plateforme de serveur personnel qui facilite la gestion des appli
 
 6. **Cliquez sur "Submit"** pour convertir la configuration en format CasaOS
 
-7. **Configurez l'application :**
-   - Donnez un nom à votre application (ex: "Whisper API")
-   - Vérifiez que les ports exposés ne créent pas de conflits (port 5000 par défaut)
-   - Définissez le port de l'interface Web (5000)
+7. **Vérifiez que les ports exposés ne créent pas de conflits** (port 5000 par défaut)
 
-8. **Configurez les variables d'environnement importantes :**
-   - `MODEL_SIZE` : Taille du modèle à utiliser (tiny, base, small, medium, large)
+8. **Modifiez les variables d'environnement selon vos besoins** :
+   - `MODEL_SIZE` : Taille du modèle Whisper à utiliser (tiny, base, small, medium, large)
    - `DEVICE` : Périphérique à utiliser (cpu, cuda)
-   - `COMPUTE_TYPE` : Type de calcul (float16, int8)
-   - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT (utilisez une valeur aléatoire et sécurisée)
+   - `COMPUTE_TYPE` : Type de calcul (int8, float16)
+   - `JWT_SECRET_KEY` : Clé secrète pour les tokens JWT (changez-la pour plus de sécurité)
    - `ADMIN_USERNAME` et `ADMIN_PASSWORD` : Identifiants administrateur
 
 9. **Cliquez sur "Install"** pour démarrer l'installation
 
-10. **Accédez à votre API** via l'URL `http://votre-serveur-casaos:5000/documentation.html`
+10. **Accédez à l'API** via l'URL `http://votre-serveur-casaos:5000/documentation.html`
 
 ### Méthode 2 : Installation via la ligne de commande
 
-Si vous préférez utiliser la ligne de commande, vous pouvez également installer l'API Whisper sur CasaOS en suivant ces étapes :
+Si vous préférez utiliser la ligne de commande, voici les étapes à suivre :
 
-1. **Connectez-vous à votre serveur CasaOS** via SSH
+1. **Connectez-vous à votre serveur CasaOS via SSH**
 
-2. **Créez un répertoire pour l'application :**
+2. **Créez un répertoire pour l'application** :
    ```bash
-   mkdir -p /DATA/AppData/whisper-api
-   cd /DATA/AppData/whisper-api
+   mkdir -p ~/casaos/whisper-api
+   cd ~/casaos/whisper-api
    ```
 
-3. **Clonez ce dépôt ou téléchargez les fichiers :**
+3. **Créez un fichier docker-compose.yml** :
    ```bash
-   git clone https://github.com/votre-utilisateur/server-whisper.git .
-   ```
-   Ou téléchargez et extrayez les fichiers manuellement.
-
-4. **Créez un fichier `.env` à partir du modèle :**
-   ```bash
-   cp env.sample .env
-   nano .env  # Modifiez les valeurs selon vos besoins
+   nano docker-compose.yml
    ```
 
-5. **Lancez l'application avec Docker Compose :**
+4. **Copiez-collez le contenu du fichier docker-compose.yml** présenté dans la méthode 1
+
+5. **Enregistrez le fichier** (Ctrl+O puis Entrée, puis Ctrl+X pour quitter)
+
+6. **Importez l'application dans CasaOS** :
    ```bash
-   docker-compose up -d
+   casaos-cli app-management import --path ~/casaos/whisper-api/docker-compose.yml
    ```
 
-6. **Vérifiez que l'application fonctionne :**
-   ```bash
-   docker-compose logs
-   ```
+7. **Vérifiez que l'application est bien installée** dans l'interface web de CasaOS
 
-7. **Accédez à votre API** via l'URL `http://votre-serveur-casaos:5000/documentation.html`
+### Conseils pratiques pour CasaOS
 
-### Conseils pour CasaOS
+- **Choix du modèle** : Le modèle "tiny" est recommandé pour les serveurs avec des ressources limitées. Pour une meilleure qualité de transcription, utilisez "base" ou "small" si vos ressources le permettent.
 
-- **Choix du modèle** : Pour les serveurs avec des ressources limitées, utilisez le modèle `tiny` ou `base`. Pour une meilleure précision, utilisez `small` ou `medium` si vos ressources le permettent.
+- **Persistance des données** : Les volumes Docker permettent de conserver les modèles téléchargés entre les redémarrages.
 
-- **Persistance des données** : Les modèles téléchargés sont stockés dans le volume Docker `/app/models`. Ils seront conservés même si vous redémarrez le conteneur.
+- **Sécurité** : Changez toujours les valeurs par défaut pour `JWT_SECRET_KEY`, `ADMIN_USERNAME` et `ADMIN_PASSWORD`.
 
-- **Sécurité** : Changez toujours les valeurs par défaut de `JWT_SECRET_KEY`, `ADMIN_USERNAME` et `ADMIN_PASSWORD` pour sécuriser votre API.
-
-- **Mise à jour** : Pour mettre à jour l'application, tirez les dernières modifications du dépôt et reconstruisez le conteneur :
+- **Mise à jour** : Pour mettre à jour l'application, utilisez la fonction "Update" de CasaOS ou exécutez :
   ```bash
-  git pull
-  docker-compose down
-  docker-compose up -d --build
+  docker pull closiqode/server-whisper:latest
+  casaos-cli app-management restart --name whisper-api
   ```
 
 ## Utilisation
@@ -267,7 +253,7 @@ Si vous préférez utiliser la ligne de commande, vous pouvez également install
 ### Démarrer le serveur (installation locale)
 
 ```bash
-python server_faster_whisper.py --model tiny
+python server_faster_whisper.py
 ```
 
 Options disponibles :
